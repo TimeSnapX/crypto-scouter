@@ -42,3 +42,5 @@ dialog{border:0;padding:0;background:none;color:var(--fg)}dialog::backdrop{backg
 .form{padding:18px;display:flex;flex-direction:column;gap:8px;width:min(420px,92vw);background:rgba(8,12,30,.95)}.form label{display:flex;flex-direction:column;gap:3px;color:var(--mut)}
 #toasts{position:fixed;bottom:44px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:30;max-width:min(420px,90vw)}.toast{padding:10px 14px;cursor:pointer;border-color:rgba(61,255,168,.6)}
 footer{position:fixed;bottom:0;left:0;right:0;padding:8px 14px;font-size:11px;color:var(--mut);background:rgba(5,7,20,.9);border-top:1px solid var(--line)}
+.hidden{display:none!important}
+#install-hint{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 12px 10px;padding:10px 14px;border-color:var(--acc)}

@@ -8,10 +8,12 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
+<script src="js/install.js?v=1"></script>
 </head><body>
 <div class="bg"></div>
 <header class="glass"><div class="brand"><span class="logo">◎</span><div><h1>CRYPTO MARKET SCOUTER</h1><small id="status">Booting radar…</small></div></div>
- <div class="hr"><span class="nfa">RESEARCH ONLY · NOT FINANCIAL ADVICE</span><button class="btn small" id="refresh" title="Refresh now">⟳ <span id="count">…</span></button></div></header>
+ <div class="hr"><span class="nfa">RESEARCH ONLY · NOT FINANCIAL ADVICE</span><button class="btn small install-btn" type="button">📲 Install app</button><button class="btn small" id="refresh" title="Refresh now">⟳ <span id="count">…</span></button></div></header>
+<div id="install-hint" class="glass hidden" role="status"><span class="ih-text"></span><button class="ih-close btn small" type="button" aria-label="Close">✕</button></div>
 <nav class="glass"><button data-tab="radar" class="on">Radar</button><button data-tab="watch">Watchlist</button><button data-tab="alerts">Alerts <span id="worthN" class="badge"></span></button><button data-tab="analytics">Analytics</button><button data-tab="argus">Argus</button><button data-tab="hades">Hades</button></nav>
 <section id="filters" class="glass">
  <input id="f-q" type="search" placeholder="Search symbol, name or CA">

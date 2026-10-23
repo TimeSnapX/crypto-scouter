@@ -1,16 +1,37 @@
 {
-  "id": "/crypto-scouter/?app=crypto-scouter",
+  "id": "/crypto-scouter/",
   "name": "Crypto Market Scouter",
   "short_name": "Scouter",
   "description": "Live Solana trench coin scouter with Heat and Risk scores. Research only, not financial advice.",
-  "start_url": "./",
+  "start_url": "/crypto-scouter/",
   "scope": "/crypto-scouter/",
   "display": "standalone",
   "background_color": "#050714",
   "theme_color": "#050714",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
