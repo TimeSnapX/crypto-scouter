@@ -44,3 +44,12 @@ dialog{border:0;padding:0;background:none;color:var(--fg)}dialog::backdrop{backg
 footer{position:fixed;bottom:0;left:0;right:0;padding:8px 14px;font-size:11px;color:var(--mut);background:rgba(5,7,20,.9);border-top:1px solid var(--line)}
 .hidden{display:none!important}
 #install-hint{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 12px 10px;padding:10px 14px;border-color:var(--acc)}
+
+/* Launch Feed */
+.lcard{cursor:default}.lcard.flagged{opacity:.72;border-color:rgba(255,176,48,.45)}
+.lcard .age{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;color:#6fe8ff}
+.lcard .flags{margin:.3rem 0;font-size:.78rem}.lcard .row{flex-wrap:wrap;gap:.3rem}
+.lhead .row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}.lfilters{margin:.5rem 0}.lfilters input[type=search]{min-width:240px}
+.mig{font-size:.82rem;margin:.4rem 0 0}.mig:empty{display:none}
+.limg{position:relative;overflow:hidden}.limg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+table.best td,table.best th{white-space:nowrap;font-size:.8rem}table.best img{vertical-align:middle;border-radius:4px}

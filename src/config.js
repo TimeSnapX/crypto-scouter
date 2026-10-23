@@ -26,5 +26,24 @@ export const CONFIG = {
   snapshots: [{ k: "+5m", ms: 5 * 60e3 }, { k: "+1h", ms: 3600e3 }, { k: "+24h", ms: 86400e3 }, { k: "+7d", ms: 7 * 86400e3 }],
   snapshotGraceMs: { "+5m": 10 * 60e3, "+1h": 30 * 60e3, "+24h": 3 * 3600e3, "+7d": 12 * 3600e3 }, // later than this => "missed (app closed)"
   storageKey: "cryptoscouter.v1",
+  // Launch Feed (PumpPortal websocket) + first-minute quick score. See FORMULA.md "Launch Feed".
+  launch: {
+    wsUrl: "wss://pumpportal.fun/api/data",
+    maxCoins: 500,                 // memory cap: oldest launches are dropped
+    maxShown: 120,                 // cards rendered at once
+    tradeSubCap: 30,               // early-trade watch list size (GeckoTerminal pools/multi, one request)
+    tradePollSec: 20,              // GeckoTerminal poll (its free limit is ~30 req/min, shared with the radar)
+    tradeSubMaxAgeSec: 300,        // stop watching trades after 5 min
+    tradeSubMinHoldSec: 60,        // a watched coin can't be swapped out before 60 s
+    devBuy: { goodLoSol: 0.1, goodHiSol: 3, bigSol: 5, bigSupplyPct: 20 }, // 0 SOL or > bigSol / > bigSupplyPct% of supply => flag
+    velocity: { windowSec: 60, buysHi: 20, volUsdHi: 1500 },                // 5m buys/volume read within the first 2 min (GeckoTerminal)
+    curveHiPct: 25,                // bonding-curve progress for full marks
+    curveTokens: { start: 1073000000, end: 279900000 }, // pump.fun virtual tokens at launch and at graduation
+    weights: { dev: 20, serial: 15, name: 15, velocity: 30, curve: 20 },
+    famous: ["SOL", "BTC", "ETH", "BONK", "WIF", "PEPE", "TRUMP", "MELANIA", "ELON", "DOGE", "SHIB", "POPCAT", "MEW", "PNUT", "GOAT", "FARTCOIN", "PENGU", "JUP", "USDC", "USDT", "BOME", "MOODENG", "AI16Z", "SPX", "GIGA", "MICHI", "CHILLGUY", "PUMP"],
+    promoteEverySec: 30,           // check DexScreener for the top launches this often
+    promoteMinAgeSec: 60, promotePerCycle: 30, rugcheckPerCycle: 2,
+    alertMinGapSec: 5,             // at most one sound/notification per 5 s
+  },
   feedUrl: "https://timesnapx.github.io/argus-hades-live/feed.json",
 };

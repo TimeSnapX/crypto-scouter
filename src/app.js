@@ -1,6 +1,8 @@
 import { CONFIG as C } from "./config.js";
 import { heatScore, riskScore, isWorth } from "./score.js";
 import * as A from "./api.js";
+import { initBest, renderBest, bestNeedsLoad, loadBest, bestBusy } from "./best.js";
+import { initLaunch, renderLaunch, launches } from "./launch.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -13,12 +15,14 @@ const ago = (ms) => { if (!ms) return U; const m = (Date.now() - ms) / 60e3; ret
 const fmtTime = (t) => new Date(t).toLocaleString("en-AU", { dateStyle: "short", timeStyle: "short" });
 
 // ---------- storage: localStorage "cryptoscouter.v1" ----------
-const S = Object.assign({ v: 1, watch: [], trades: [], alerted: {}, worth: { ...C.worth }, filters: { q: "", minHeat: 0, maxRisk: 100, minLiq: 0, maxAgeH: 0, worthOnly: false, sort: "heat" }, notify: false }, (() => { try { return JSON.parse(localStorage.getItem(C.storageKey)) || {}; } catch { return {}; } })());
+const S = Object.assign({ v: 1, watch: [], trades: [], alerted: {}, worth: { ...C.worth }, filters: { q: "", minHeat: 0, maxRisk: 100, minLiq: 0, maxAgeH: 0, worthOnly: false, sort: "heat" }, notify: false, launch: { q: "", hideFlagged: false, minBuys: 0, minScore: 0, sound: false, notify: false } }, (() => { try { return JSON.parse(localStorage.getItem(C.storageKey)) || {}; } catch { return {}; } })());
+S.launch = Object.assign({ q: "", hideFlagged: false, minBuys: 0, minScore: 0, sound: false, notify: false }, S.launch);
 const save = () => localStorage.setItem(C.storageKey, JSON.stringify(S));
 
 // ---------- radar state ----------
 const coins = new Map(); // mint -> coin
 const rugCache = new Map(); // mint -> {report, hist:[{t,holders}]}
+const promoted = new Map(); // mint -> time promoted from the Launch Feed (kept on the radar 30 min)
 let lastRefresh = 0, tab = "radar", openMint = null, feed = null, refreshing = false;
 
 function score(c) {
@@ -36,7 +40,7 @@ async function refresh() {
     const seeds = new Map();
     for (const x of [...gt, ...profiles]) if (!seeds.has(x.mint)) seeds.set(x.mint, x);
     for (const m of boosts.keys()) if (!seeds.has(m)) seeds.set(m, { mint: m, src: "boost" });
-    const tracked = new Set([...S.watch, ...S.trades.filter(openTracking).map((t) => t.mint)]);
+    const tracked = new Set([...promoted.keys()].filter((m) => Date.now() - promoted.get(m) < 30 * 60e3)); for (const m of [...S.watch, ...S.trades.filter(openTracking).map((t) => t.mint)]) tracked.add(m);
     const mints = [...new Set([...tracked, ...seeds.keys(), ...coins.keys()])].slice(0, 150);
     const pairs = await A.dsTokens(mints);
     for (const [m, p] of pairs) { const c = Object.assign(coins.get(m) || {}, A.pairToCoin(p)); c.boosts = boosts.get(m) ?? c.boosts ?? 0; c.src = c.src || seeds.get(m)?.src || "tracked"; c.seenAt = c.seenAt || Date.now(); coins.set(m, c); }
@@ -148,6 +152,7 @@ function card(c) {
     <span>Age</span><b>${c.createdAt ? ago(c.createdAt) : U}</b><span>5m</span><b class="${(c.chgM5 ?? 0) >= 0 ? "up" : "dn"}">${pct(c.chgM5)}</b></div></button>`;
 }
 function render() {
+  if (tab !== "launch" && $("#lgrid")) $("#main").innerHTML = "";
   document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   $("#filters").hidden = !["radar", "watch"].includes(tab);
   const main = $("#main"); const worthN = [...coins.values()].filter((c) => c.worth).length; $("#worthN").textContent = worthN || "";
@@ -161,7 +166,9 @@ function render() {
      ${list.length ? `<div class="grid">${list.map(card).join("")}</div>` : '<p class="empty">No coin passes the alert bar right now.</p>'}`;
     for (const [id, k] of [["#wH", "minHeat"], ["#wR", "maxRisk"], ["#wL", "minLiqUsd"]]) $(id).onchange = (e) => { S.worth[k] = +e.target.value; for (const c of coins.values()) score(c); save(); render(); };
     $("#notif").onclick = async () => { if (!("Notification" in window)) return toast("This browser has no notifications."); const p = await Notification.requestPermission(); S.notify = p === "granted"; save(); render(); };
-  } else if (tab === "argus" || tab === "hades") renderFeed(main);
+  } else if (tab === "best") { if (bestNeedsLoad()) loadBest(); renderBest(main); }
+  else if (tab === "launch") { if (!main.querySelector("#lgrid")) main.innerHTML = ""; renderLaunch(main); }
+  else if (tab === "argus" || tab === "hades") renderFeed(main);
   else if (tab === "analytics") renderAnalytics(main);
   if (openMint) renderDrawer();
 }
@@ -289,7 +296,7 @@ function drawChart(bars) {
 // ---------- wiring ----------
 document.querySelector("nav").onclick = async (e) => { const b = e.target.closest("button[data-tab]"); if (!b) return; tab = b.dataset.tab;
   if ((tab === "argus" || tab === "hades") && !feed) { render(); feed = (await A.argusFeed()) || false; } render(); };
-$("#main").onclick = (e) => { const c = e.target.closest("[data-mint]"); if (c) return openDrawer(c.dataset.mint);
+$("#main").onclick = (e) => { const cp = e.target.closest("[data-copy]"); if (cp) { navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("CA copied"), () => toast("Copy blocked: " + cp.dataset.copy)); return; } const c = e.target.closest("[data-mint]"); if (c) return openDrawer(c.dataset.mint);
   const o = e.target.closest("[data-open]"); if (o) return openDrawer(o.dataset.open);
   const l = e.target.closest("[data-log]"); if (l) return tradeForm(l.dataset.log, l.dataset.src);
   const d = e.target.closest("[data-del]"); if (d && confirm("Delete this logged trade?")) { S.trades = S.trades.filter((t) => t.id !== d.dataset.del); save(); render(); } };
@@ -302,4 +309,10 @@ setInterval(tick, 1000);
 setInterval(() => { if (tab === "analytics") render(); }, 60e3);
 trackTrades(); render(); refresh();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
-window.__scouter = { coins, S, apiStatus: A.apiStatus };
+initBest({ rerender: () => { if (tab === "best") renderBest($("#main")); } });
+initLaunch({ toast, gtBusy: bestBusy, prefs: () => S.launch, save, rerender: () => { if (tab === "launch") renderLaunch($("#main")); },
+  addToRadar: (l, pair, rep) => { const c = Object.assign(coins.get(l.mint) || {}, pair ? A.pairToCoin(pair) : { mint: l.mint, symbol: l.symbol, name: l.name, image: l.image || null, createdAt: l.seenAt, dsUrl: `https://dexscreener.com/solana/${l.mint}`, socials: l.socials || [] });
+    c.boosts = c.boosts ?? 0; c.src = "launch"; c.seenAt = c.seenAt || Date.now(); coins.set(l.mint, c); promoted.set(l.mint, Date.now());
+    if (rep) rugCache.set(l.mint, { report: rep, hist: [{ t: rep.at, holders: rep.holders }] }); score(c); if (tab !== "launch") render(); } });
+setInterval(() => { if (tab === "launch" && !document.hidden) renderLaunch($("#main")); }, 1000);
+window.__scouter = { launches, coins, S, apiStatus: A.apiStatus };
