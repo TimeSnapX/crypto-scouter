@@ -1,0 +1,54 @@
+{
+ "schema": "crypto-scouter-feed/1",
+ "updated_aest": "2026-10-23T22:41:50+10:00",
+ "research_only": true,
+ "disclaimer": "Research only, not financial advice.",
+ "rules": {
+  "worth": {
+   "minHeat": 65,
+   "maxRisk": 40,
+   "minLiqUsd": 10000
+  },
+  "formula": "https://github.com/TimeSnapX/crypto-scouter/blob/main/FORMULA.md"
+ },
+ "apis_ok": {
+  "dexscreener_profiles": true,
+  "dexscreener_boosts": true,
+  "geckoterminal_new_pools": true,
+  "dexscreener_token_pairs": true,
+  "rugcheck": true
+ },
+ "scanned": 87,
+ "of_worth": [
+  {
+   "mint": "2JSj9dzLQwAi3q1dHYjCPF5Gveg81hBTRy8EeM3Fpump",
+   "symbol": "ARCTIS",
+   "name": "Arctis",
+   "pair": "5SpztG8hdXCG3YWx7hWjHGHF8CYGNRSWZ1smmfQQkAMX",
+   "priceUsd": 0.000144,
+   "mcap": 138722.0,
+   "liq": 31050.3,
+   "volH1": 84241.59,
+   "volH24": 124247.22,
+   "buysH1": 2164.0,
+   "sellsH1": 968.0,
+   "ageMin": 156.949553,
+   "holders": 2042.0,
+   "mintAuthority": null,
+   "freezeAuthority": null,
+   "lpLockedPct": 78.658283,
+   "top10Pct": 21.687589,
+   "boosts": 500.0,
+   "heat": 67,
+   "risk": 15,
+   "grade": "A",
+   "flags": [
+    "LP only 79% locked/burned",
+    "Top-10 holders own 21.7%",
+    "Paid DexScreener boosts (500)"
+   ],
+   "dexscreener": "https://dexscreener.com/solana/5spztg8hdxcg3ywx7hwjhghf8cygnrswz1smmfqqkamx",
+   "solscan": "https://solscan.io/token/2JSj9dzLQwAi3q1dHYjCPF5Gveg81hBTRy8EeM3Fpump"
+  }
+ ]
+}
