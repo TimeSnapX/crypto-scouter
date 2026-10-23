@@ -310,7 +310,7 @@ setInterval(() => { if (tab === "analytics") render(); }, 60e3);
 trackTrades(); render(); refresh();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
 initBest({ rerender: () => { if (tab === "best") renderBest($("#main")); } });
-initLaunch({ toast, gtBusy: bestBusy, prefs: () => S.launch, save, rerender: () => { if (tab === "launch") renderLaunch($("#main")); },
+initLaunch({ toast, gtBusy: () => bestBusy() || refreshing, prefs: () => S.launch, save, rerender: () => { if (tab === "launch") renderLaunch($("#main")); },
   addToRadar: (l, pair, rep) => { const c = Object.assign(coins.get(l.mint) || {}, pair ? A.pairToCoin(pair) : { mint: l.mint, symbol: l.symbol, name: l.name, image: l.image || null, createdAt: l.seenAt, dsUrl: `https://dexscreener.com/solana/${l.mint}`, socials: l.socials || [] });
     c.boosts = c.boosts ?? 0; c.src = "launch"; c.seenAt = c.seenAt || Date.now(); coins.set(l.mint, c); promoted.set(l.mint, Date.now());
     if (rep) rugCache.set(l.mint, { report: rep, hist: [{ t: rep.at, holders: rep.holders }] }); score(c); if (tab !== "launch") render(); } });
